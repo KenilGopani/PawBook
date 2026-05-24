@@ -108,3 +108,52 @@ export async function neo4jWrite(
 ): Promise<void> {
   await neo4jQuery(cypher, params);
 }
+
+/**
+ * Execute multiple Cypher statements in a single HTTP request (batch).
+ * All statements run in the same auto-commit transaction.
+ *
+ * See: 10_sync_supabase_neo4j.md — neo4jBatch
+ *
+ * @param statements - Array of { statement, parameters } objects
+ *
+ * @example
+ * await neo4jBatch([
+ *   { statement: 'MATCH (a:Pet {id: $a})-[r:FRIENDS_WITH]->(b:Pet {id: $b}) DELETE r', parameters: { a: id1, b: id2 } },
+ *   { statement: 'MATCH (a:Pet {id: $a})-[r:FRIENDS_WITH]->(b:Pet {id: $b}) DELETE r', parameters: { a: id2, b: id1 } },
+ * ]);
+ */
+export async function neo4jBatch(
+  statements: Array<{ statement: string; parameters: Record<string, unknown> }>
+): Promise<void> {
+  const uri = Deno.env.get("NEO4J_URI");
+  const user = Deno.env.get("NEO4J_USER") || "neo4j";
+  const password = Deno.env.get("NEO4J_PASSWORD");
+
+  if (!uri || !password) {
+    throw new Error("Neo4j credentials not configured (NEO4J_URI, NEO4J_PASSWORD)");
+  }
+
+  const endpoint = `${uri}/db/neo4j/tx/commit`;
+
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Basic ${btoa(`${user}:${password}`)}`,
+      Accept: "application/json",
+    },
+    body: JSON.stringify({ statements }),
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`Neo4j batch error ${response.status}: ${text}`);
+  }
+
+  const data = await response.json();
+  if (data.errors && data.errors.length > 0) {
+    const errMsg = data.errors.map((e: { code: string; message: string }) => `${e.code}: ${e.message}`).join("; ");
+    throw new Error(`Neo4j batch error: ${errMsg}`);
+  }
+}

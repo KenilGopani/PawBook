@@ -1,0 +1,17 @@
+# Graphify index configuration
+# Only index src/ for the knowledge graph
+node_modules/
+dist/
+*.generated.py
+
+*
+!src/
+!src/**
+!supabase/
+!supabase/**
+!neo4j/
+!neo4j/**
+!buildMDs/
+!buildMDs/**
+!docs/
+!docs/**

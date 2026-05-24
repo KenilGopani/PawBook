@@ -30,6 +30,35 @@ export const ALLOWED_PLACE_TYPES = [
 
 export const ALLOWED_REACTION_TYPES = ["PAW", "BONE", "HEART"] as const;
 
+// ─── Specs 06–09 Enums ───────────────────────────────────
+
+export const ALLOWED_ALERT_TYPES = [
+  "DANGEROUS_DOG", "WILDLIFE", "THEFT", "LOST_ITEM", "OTHER",
+] as const;
+
+export const ALLOWED_REPORT_REASONS = [
+  "INAPPROPRIATE_CONTENT", "SPAM", "HARASSMENT",
+  "FAKE_PROFILE", "ANIMAL_ABUSE", "DANGEROUS_CONTENT", "OTHER",
+] as const;
+
+export const ALLOWED_REPORT_TARGETS = [
+  "profile", "pet", "post", "comment", "place",
+] as const;
+
+export const ALLOWED_PLACE_TAGS = [
+  "off-leash", "fenced", "water", "shade", "parking", "indoor",
+  "outdoor-seating", "dog-menu", "small-dog-area", "large-dog-area",
+  "pet-friendly-staff", "accepts-all-breeds",
+] as const;
+
+export const ALLOWED_MEDIA_CONTENT_TYPES = [
+  "image/jpeg", "image/png", "image/heic", "video/mp4", "video/mov",
+] as const;
+
+export const ALLOWED_POST_MEDIA_TYPES = ["photo", "video"] as const;
+
+export const ALLOWED_RSVP_STATUSES = ["ACCEPTED", "DECLINED"] as const;
+
 // ─── Pet Validation ───────────────────────────────────────
 
 export interface CreatePetInput {
