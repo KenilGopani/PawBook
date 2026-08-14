@@ -10,7 +10,7 @@
 import { handleCors } from "../_shared/cors.ts";
 import { createUserClient, getAuthUser } from "../_shared/supabase.ts";
 import { neo4jQuery } from "../_shared/neo4j.ts";
-import { ok, errorResponse, AppError } from "../_shared/errors.ts";
+import { AppError, errorResponse, ok } from "../_shared/errors.ts";
 import { getQueryParams } from "../_shared/helpers.ts";
 
 Deno.serve(async (req) => {
@@ -51,7 +51,7 @@ Deno.serve(async (req) => {
       ORDER BY v.visited_at DESC
       LIMIT $limit
       `,
-      { place_id, since_date, limit }
+      { place_id, since_date, limit },
     );
 
     if (neo4jResult.length === 0) {

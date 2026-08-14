@@ -10,8 +10,8 @@
 
 import { handleCors } from "../_shared/cors.ts";
 import { createUserClient, getAuthUser } from "../_shared/supabase.ts";
-import { ok, errorResponse, AppError } from "../_shared/errors.ts";
-import { getQueryParams, getOwnerPetIds, distanceLabel } from "../_shared/helpers.ts";
+import { AppError, errorResponse, ok } from "../_shared/errors.ts";
+import { distanceLabel, getOwnerPetIds, getQueryParams } from "../_shared/helpers.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return handleCors();

@@ -10,7 +10,7 @@
 
 import { handleCors } from "../_shared/cors.ts";
 import { createUserClient, getAuthUser } from "../_shared/supabase.ts";
-import { ok, errorResponse, AppError } from "../_shared/errors.ts";
+import { errorResponse, ok } from "../_shared/errors.ts";
 import { getQueryParams } from "../_shared/helpers.ts";
 
 Deno.serve(async (req) => {

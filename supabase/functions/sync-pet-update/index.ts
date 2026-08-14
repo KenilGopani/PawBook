@@ -45,7 +45,7 @@ Deno.serve(async (req) => {
         size: record.size ?? "",
         is_vaccinated: record.is_vaccinated,
         is_active: record.is_active,
-      }
+      },
     );
 
     return new Response("ok", { status: 200 });

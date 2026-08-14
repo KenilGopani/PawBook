@@ -33,7 +33,7 @@ Deno.serve(async (req) => {
       {
         status: 503,
         headers: { "Content-Type": "application/json" },
-      }
+      },
     );
   }
 });

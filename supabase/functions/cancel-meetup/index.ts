@@ -9,7 +9,7 @@
 
 import { handleCors } from "../_shared/cors.ts";
 import { createUserClient, getAuthUser } from "../_shared/supabase.ts";
-import { ok, errorResponse, AppError, NotFoundError } from "../_shared/errors.ts";
+import { AppError, errorResponse, NotFoundError, ok } from "../_shared/errors.ts";
 import { createNotification, getQueryParams } from "../_shared/helpers.ts";
 
 Deno.serve(async (req) => {
@@ -63,7 +63,11 @@ Deno.serve(async (req) => {
       const scheduledTime = new Date(meetup.scheduled_at).getTime();
       const twoHoursFromNow = Date.now() + 2 * 60 * 60 * 1000;
       if (scheduledTime < twoHoursFromNow) {
-        throw new AppError("TOO_LATE_TO_CANCEL", "Cannot cancel a scheduled meetup less than 2 hours before the start time", 409);
+        throw new AppError(
+          "TOO_LATE_TO_CANCEL",
+          "Cannot cancel a scheduled meetup less than 2 hours before the start time",
+          409,
+        );
       }
     }
 

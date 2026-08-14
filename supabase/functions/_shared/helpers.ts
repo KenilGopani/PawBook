@@ -11,7 +11,7 @@
  */
 
 import { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { AppError, ForbiddenError } from "./errors.ts";
+import { ForbiddenError } from "./errors.ts";
 import { neo4jQuery } from "./neo4j.ts";
 
 /**
@@ -21,7 +21,7 @@ import { neo4jQuery } from "./neo4j.ts";
 export async function assertPetOwner(
   supabase: SupabaseClient,
   userId: string,
-  petId: string
+  petId: string,
 ): Promise<void> {
   const { data, error } = await supabase
     .from("pets")
@@ -45,7 +45,7 @@ export async function createNotification(
     recipient_id: string;
     type: string;
     payload: Record<string, unknown>;
-  }
+  },
 ): Promise<void> {
   const { error } = await supabase.from("notifications").insert(notification);
   if (error) {
@@ -59,7 +59,7 @@ export async function createNotification(
  */
 export async function getOwnerPetIds(
   supabase: SupabaseClient,
-  ownerId: string
+  ownerId: string,
 ): Promise<string[]> {
   const { data } = await supabase
     .from("pets")
@@ -110,7 +110,7 @@ export function getQueryParams(req: Request): Record<string, string> {
  */
 export async function computeCompatibility(
   petAId: string,
-  petBId: string
+  petBId: string,
 ): Promise<number> {
   const results = await neo4jQuery(
     `
@@ -125,7 +125,7 @@ export async function computeCompatibility(
          CASE WHEN me.is_vaccinated AND other.is_vaccinated THEN 10 ELSE 0 END as vacc_score
     RETURN toInteger(trait_score + size_score + species_score + vacc_score) as compatibility_score
     `,
-    { a: petAId, b: petBId }
+    { a: petAId, b: petBId },
   );
 
   return (results[0]?.compatibility_score as number) ?? 0;
@@ -137,14 +137,14 @@ export async function computeCompatibility(
 export async function checkBlocked(
   supabase: SupabaseClient,
   petAId: string,
-  petBId: string
+  petBId: string,
 ): Promise<boolean> {
   const { data } = await supabase
     .from("pet_relationships")
     .select("id")
     .eq("rel_type", "BLOCKED")
     .or(
-      `and(from_pet_id.eq.${petAId},to_pet_id.eq.${petBId}),and(from_pet_id.eq.${petBId},to_pet_id.eq.${petAId})`
+      `and(from_pet_id.eq.${petAId},to_pet_id.eq.${petBId}),and(from_pet_id.eq.${petBId},to_pet_id.eq.${petAId})`,
     )
     .maybeSingle();
 

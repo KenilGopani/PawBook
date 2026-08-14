@@ -39,7 +39,7 @@ Deno.serve(async (req) => {
         type: record.type,
         avg_rating: record.avg_rating ?? 0,
         is_active: record.is_active,
-      }
+      },
     );
 
     return new Response("ok", { status: 200 });

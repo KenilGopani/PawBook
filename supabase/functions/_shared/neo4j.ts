@@ -36,7 +36,7 @@ interface Neo4jResponse {
  */
 export async function neo4jQuery(
   cypher: string,
-  params: Record<string, unknown> = {}
+  params: Record<string, unknown> = {},
 ): Promise<Record<string, unknown>[]> {
   const uri = Deno.env.get("NEO4J_URI");
   const user = Deno.env.get("NEO4J_USER") || "neo4j";
@@ -104,7 +104,7 @@ export async function neo4jQuery(
  */
 export async function neo4jWrite(
   cypher: string,
-  params: Record<string, unknown> = {}
+  params: Record<string, unknown> = {},
 ): Promise<void> {
   await neo4jQuery(cypher, params);
 }
@@ -124,7 +124,7 @@ export async function neo4jWrite(
  * ]);
  */
 export async function neo4jBatch(
-  statements: Array<{ statement: string; parameters: Record<string, unknown> }>
+  statements: Array<{ statement: string; parameters: Record<string, unknown> }>,
 ): Promise<void> {
   const uri = Deno.env.get("NEO4J_URI");
   const user = Deno.env.get("NEO4J_USER") || "neo4j";
@@ -153,7 +153,9 @@ export async function neo4jBatch(
 
   const data = await response.json();
   if (data.errors && data.errors.length > 0) {
-    const errMsg = data.errors.map((e: { code: string; message: string }) => `${e.code}: ${e.message}`).join("; ");
+    const errMsg = data.errors.map((e: { code: string; message: string }) =>
+      `${e.code}: ${e.message}`
+    ).join("; ");
     throw new Error(`Neo4j batch error: ${errMsg}`);
   }
 }

@@ -9,7 +9,7 @@
 
 import { handleCors } from "../_shared/cors.ts";
 import { createUserClient, getAuthUser } from "../_shared/supabase.ts";
-import { ok, errorResponse, AppError, NotFoundError } from "../_shared/errors.ts";
+import { AppError, errorResponse, NotFoundError, ok } from "../_shared/errors.ts";
 import { createNotification, getQueryParams } from "../_shared/helpers.ts";
 
 Deno.serve(async (req) => {
@@ -58,7 +58,11 @@ Deno.serve(async (req) => {
     }
 
     if (alert.status !== "ACTIVE") {
-      throw new AppError("ALERT_EXPIRED", `Cannot report a sighting for an alert that is ${alert.status}`, 409);
+      throw new AppError(
+        "ALERT_EXPIRED",
+        `Cannot report a sighting for an alert that is ${alert.status}`,
+        409,
+      );
     }
 
     // 2. Fetch reporter profile to get display name

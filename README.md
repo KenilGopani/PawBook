@@ -80,6 +80,40 @@ supabase db push
 **Option B — Dashboard**
 Run each file in `supabase/migrations/` sequentially in the Supabase SQL Editor.
 
+### 2b. Seed demo data (local only)
+
+`supabase/seed.sql` runs automatically as part of a local reset:
+
+```bash
+supabase db reset
+```
+
+That gives you six working logins, seven pets with a friendship graph,
+four places, three meetups across the lifecycle, a populated feed, and
+active safety alerts.
+
+```
+demo@pawbook.test / pawbook123
+```
+
+The other five accounts (`aisha@`, `marco@`, `dana@`, `sam@`, `priya@`
+`pawbook.test`) share that password — log in as one of them to see the
+same data from the other side of a friendship or meetup invite.
+
+It's deliberately **not** a numbered migration: `supabase db push`
+applies migrations to every environment, and demo pets shouldn't reach
+staging or production. To load it into a hosted dev project, run it
+explicitly:
+
+```bash
+psql "$DATABASE_URL" -f supabase/seed.sql
+```
+
+Note that the seed only populates Postgres. Neo4j is written by the Edge
+Functions and the sync triggers, so graph-backed features (`discover-*`,
+`mutual-friends`, place social proof) stay empty until those run against
+a live graph.
+
 ### 3. Setup Neo4j
 
 Run the contents of `neo4j/setup_constraints.cypher` in your AuraDB Browser console.
@@ -109,6 +143,18 @@ supabase functions deploy
 supabase secrets set NEO4J_URI=https://your-instance.databases.neo4j.io
 supabase secrets set NEO4J_USER=neo4j
 supabase secrets set NEO4J_PASSWORD=your-password
+supabase secrets set APNS_TEAM_ID=your-apple-team-id
+supabase secrets set APNS_KEY_ID=your-auth-key-id
+supabase secrets set APNS_BUNDLE_ID=com.yourcompany.pawbook
+supabase secrets set APNS_ENV=production
+supabase secrets set APNS_PRIVATE_KEY="$(cat AuthKey_XXXXXXXXXX.p8)"
+```
+
+Also set the DB-trigger sync settings used by [`00019_neo4j_sync_triggers.sql`](supabase/migrations/00019_neo4j_sync_triggers.sql) via the SQL editor (these are Postgres settings, not Edge Function secrets):
+
+```sql
+ALTER DATABASE postgres SET app.edge_function_url = 'https://your-project-ref.supabase.co/functions/v1';
+ALTER DATABASE postgres SET app.service_role_key = 'your-service-role-key';
 ```
 
 ## Tech Stack

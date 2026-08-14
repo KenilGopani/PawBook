@@ -1,0 +1,25 @@
+{
+  "tasks": {
+    "test": "deno test --allow-env .",
+    "check": "deno check _shared/*.ts */index.ts"
+  },
+  "fmt": {
+    "lineWidth": 100
+  },
+  "lint": {
+    // no-import-prefix: Supabase Edge Functions are conventionally written
+    //   with inline `https://esm.sh/...` imports (no import map) — that's
+    //   how every function in this repo, and Supabase's own function
+    //   templates, already import supabase-js.
+    // no-explicit-any: this predates CI — ~25 pre-existing `any` usages
+    //   (Postgrest/RPC result shapes) across the function set. Re-typing
+    //   them all is a real refactor, not something to bundle into an
+    //   unrelated change; tighten it separately.
+    "rules": {
+      "exclude": [
+        "no-import-prefix",
+        "no-explicit-any"
+      ]
+    }
+  }
+}

@@ -12,8 +12,8 @@
 import { handleCors } from "../_shared/cors.ts";
 import { createUserClient, getAuthUser } from "../_shared/supabase.ts";
 import { neo4jQuery } from "../_shared/neo4j.ts";
-import { ok, errorResponse, AppError } from "../_shared/errors.ts";
-import { getQueryParams, getOwnerPetIds, distanceLabel } from "../_shared/helpers.ts";
+import { AppError, errorResponse, ok } from "../_shared/errors.ts";
+import { distanceLabel, getOwnerPetIds, getQueryParams } from "../_shared/helpers.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return handleCors();
@@ -83,7 +83,7 @@ Deno.serve(async (req) => {
         WITH place.id as place_id, COUNT(DISTINCT friend) as friend_visit_count
         RETURN place_id, friend_visit_count
         `,
-        { place_ids: placeIds, my_pet_ids: userPetIds }
+        { place_ids: placeIds, my_pet_ids: userPetIds },
       );
 
       socialProof?.forEach((r: any) => {
@@ -110,9 +110,7 @@ Deno.serve(async (req) => {
 
     // 4. Tag filtering (if tags provided)
     if (tagFilter.length > 0) {
-      enriched = enriched.filter((p: any) =>
-        tagFilter.every((t) => p.tags.includes(t))
-      );
+      enriched = enriched.filter((p: any) => tagFilter.every((t) => p.tags.includes(t)));
     }
 
     // 5. Sorting

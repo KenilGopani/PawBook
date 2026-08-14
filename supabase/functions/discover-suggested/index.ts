@@ -11,7 +11,7 @@
 import { handleCors } from "../_shared/cors.ts";
 import { createUserClient, getAuthUser } from "../_shared/supabase.ts";
 import { neo4jQuery } from "../_shared/neo4j.ts";
-import { ok, errorResponse, AppError } from "../_shared/errors.ts";
+import { AppError, errorResponse, ok } from "../_shared/errors.ts";
 import { assertPetOwner, getQueryParams } from "../_shared/helpers.ts";
 
 Deno.serve(async (req) => {
@@ -55,7 +55,7 @@ Deno.serve(async (req) => {
       RETURN suggestion.id as pet_id, mutual_count, mutual_names, compatibility_score
       LIMIT $limit
       `,
-      { pet_id, limit }
+      { pet_id, limit },
     );
 
     if (neo4jResult.length === 0) {
@@ -67,7 +67,9 @@ Deno.serve(async (req) => {
     // 3. Enrich with Supabase details
     const { data: pets, error: petsError } = await supabase
       .from("pets")
-      .select("id, name, breed, avatar_url, temperament, size, is_vaccinated, profiles!owner_id(display_name, city)")
+      .select(
+        "id, name, breed, avatar_url, temperament, size, is_vaccinated, profiles!owner_id(display_name, city)",
+      )
       .in("id", petIds)
       .eq("is_active", true);
 

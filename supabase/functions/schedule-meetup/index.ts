@@ -9,7 +9,7 @@
 
 import { handleCors } from "../_shared/cors.ts";
 import { createUserClient, getAuthUser } from "../_shared/supabase.ts";
-import { ok, errorResponse, AppError, NotFoundError } from "../_shared/errors.ts";
+import { AppError, errorResponse, NotFoundError, ok } from "../_shared/errors.ts";
 import { createNotification, getQueryParams } from "../_shared/helpers.ts";
 
 Deno.serve(async (req) => {
@@ -53,7 +53,11 @@ Deno.serve(async (req) => {
 
     // 2. Validate state
     if (meetup.status !== "PENDING" && meetup.status !== "ACCEPTED") {
-      throw new AppError("INVALID_STATE", `Cannot schedule a meetup in status ${meetup.status}`, 409);
+      throw new AppError(
+        "INVALID_STATE",
+        `Cannot schedule a meetup in status ${meetup.status}`,
+        409,
+      );
     }
 
     if (!scheduled_at) {
@@ -67,7 +71,11 @@ Deno.serve(async (req) => {
 
     const minFutureTime = Date.now() + 60 * 60 * 1000 - 60 * 1000;
     if (scheduledDate.getTime() < minFutureTime) {
-      throw new AppError("VALIDATION_ERROR", "scheduled_at must be at least 1 hour in the future", 400);
+      throw new AppError(
+        "VALIDATION_ERROR",
+        "scheduled_at must be at least 1 hour in the future",
+        400,
+      );
     }
 
     if (!place_id && !custom_location) {
@@ -90,7 +98,11 @@ Deno.serve(async (req) => {
     if (custom_location) {
       const { lat, lng } = custom_location;
       if (typeof lat !== "number" || typeof lng !== "number") {
-        throw new AppError("VALIDATION_ERROR", "custom_location must have numeric lat and lng", 400);
+        throw new AppError(
+          "VALIDATION_ERROR",
+          "custom_location must have numeric lat and lng",
+          400,
+        );
       }
       pointStr = `POINT(${lng} ${lat})`;
     }

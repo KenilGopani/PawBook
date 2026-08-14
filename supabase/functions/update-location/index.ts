@@ -13,7 +13,7 @@
 import { handleCors } from "../_shared/cors.ts";
 import { createUserClient, getAuthUser } from "../_shared/supabase.ts";
 import { neo4jQuery } from "../_shared/neo4j.ts";
-import { ok, errorResponse } from "../_shared/errors.ts";
+import { errorResponse, ok } from "../_shared/errors.ts";
 import { validateLocation } from "../_shared/validation.ts";
 
 Deno.serve(async (req) => {
@@ -46,7 +46,7 @@ Deno.serve(async (req) => {
       MERGE (o:Owner {id: $owner_id})
       SET o.lat = $lat, o.lng = $lng, o.city = $city
       `,
-      { owner_id: user.id, lat, lng, city }
+      { owner_id: user.id, lat, lng, city },
     );
 
     // 3. Also update city on all Pet nodes owned by this user
@@ -55,7 +55,7 @@ Deno.serve(async (req) => {
       MATCH (o:Owner {id: $owner_id})-[:OWNS]->(p:Pet)
       SET p.city = $city, p.lat = $lat, p.lng = $lng
       `,
-      { owner_id: user.id, city, lat, lng }
+      { owner_id: user.id, city, lat, lng },
     );
 
     return ok({ success: true });

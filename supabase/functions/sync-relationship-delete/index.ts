@@ -7,7 +7,7 @@
  * POST /functions/v1/sync-relationship-delete
  */
 
-import { neo4jQuery, neo4jBatch } from "../_shared/neo4j.ts";
+import { neo4jBatch, neo4jQuery } from "../_shared/neo4j.ts";
 
 Deno.serve(async (req) => {
   // Verify authorization
@@ -45,12 +45,12 @@ Deno.serve(async (req) => {
     } else if (rel_type === "FRIEND_REQ") {
       await neo4jQuery(
         "MATCH (a:Pet {id: $a})-[r:SENT_REQUEST_TO]->(b:Pet {id: $b}) DELETE r",
-        { a: from_pet_id, b: to_pet_id }
+        { a: from_pet_id, b: to_pet_id },
       );
     } else if (rel_type === "BLOCKED") {
       await neo4jQuery(
         "MATCH (a:Pet {id: $a})-[r:BLOCKED]->(b:Pet {id: $b}) DELETE r",
-        { a: from_pet_id, b: to_pet_id }
+        { a: from_pet_id, b: to_pet_id },
       );
     }
 

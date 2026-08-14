@@ -14,8 +14,8 @@
 import { handleCors } from "../_shared/cors.ts";
 import { createUserClient, getAuthUser } from "../_shared/supabase.ts";
 import { neo4jQuery } from "../_shared/neo4j.ts";
-import { ok, errorResponse, AppError, NotFoundError } from "../_shared/errors.ts";
-import { assertPetOwner, createNotification, computeCompatibility } from "../_shared/helpers.ts";
+import { AppError, errorResponse, NotFoundError, ok } from "../_shared/errors.ts";
+import { assertPetOwner, computeCompatibility, createNotification } from "../_shared/helpers.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return handleCors();
@@ -40,8 +40,12 @@ Deno.serve(async (req) => {
       .single();
 
     if (!rel) throw new NotFoundError("Relationship not found");
-    if (rel.rel_type !== "FRIEND_REQ") throw new AppError("INVALID_STATE", "Not a pending request", 409);
-    if (rel.to_pet_id !== accepting_pet_id) throw new AppError("AUTH_FORBIDDEN", "Not the recipient", 403);
+    if (rel.rel_type !== "FRIEND_REQ") {
+      throw new AppError("INVALID_STATE", "Not a pending request", 409);
+    }
+    if (rel.to_pet_id !== accepting_pet_id) {
+      throw new AppError("AUTH_FORBIDDEN", "Not the recipient", 403);
+    }
 
     // 3. Compute compatibility score via Neo4j
     const compatibility = await computeCompatibility(rel.from_pet_id, accepting_pet_id);
@@ -68,7 +72,12 @@ Deno.serve(async (req) => {
       MERGE (b)-[f2:FRIENDS_WITH]->(a)
       SET f2.since = $since, f2.compatibility = $score
       `,
-      { from_pet_id: rel.from_pet_id, to_pet_id: accepting_pet_id, since: now, score: compatibility }
+      {
+        from_pet_id: rel.from_pet_id,
+        to_pet_id: accepting_pet_id,
+        since: now,
+        score: compatibility,
+      },
     );
 
     // 6. Notify requester: FRIEND_ACCEPTED

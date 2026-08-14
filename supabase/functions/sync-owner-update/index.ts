@@ -62,7 +62,7 @@ Deno.serve(async (req) => {
         city: record.city ?? "",
         lat,
         lng,
-      }
+      },
     );
 
     return new Response("ok", { status: 200 });

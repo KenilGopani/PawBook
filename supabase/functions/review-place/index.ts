@@ -10,7 +10,7 @@
 
 import { handleCors } from "../_shared/cors.ts";
 import { createUserClient, getAuthUser } from "../_shared/supabase.ts";
-import { ok, errorResponse, AppError, NotFoundError } from "../_shared/errors.ts";
+import { AppError, errorResponse, NotFoundError, ok } from "../_shared/errors.ts";
 import { getQueryParams } from "../_shared/helpers.ts";
 
 Deno.serve(async (req) => {
@@ -67,7 +67,7 @@ Deno.serve(async (req) => {
           rating,
           body: reviewBody || null,
         },
-        { onConflict: "place_id,author_id" }
+        { onConflict: "place_id,author_id" },
       )
       .select()
       .single();

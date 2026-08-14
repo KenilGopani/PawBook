@@ -25,7 +25,13 @@ export const ALLOWED_TEMPERAMENTS = [
 ] as const;
 
 export const ALLOWED_PLACE_TYPES = [
-  "park", "cafe", "trail", "beach", "vet", "groomer", "other",
+  "park",
+  "cafe",
+  "trail",
+  "beach",
+  "vet",
+  "groomer",
+  "other",
 ] as const;
 
 export const ALLOWED_REACTION_TYPES = ["PAW", "BONE", "HEART"] as const;
@@ -33,26 +39,52 @@ export const ALLOWED_REACTION_TYPES = ["PAW", "BONE", "HEART"] as const;
 // ─── Specs 06–09 Enums ───────────────────────────────────
 
 export const ALLOWED_ALERT_TYPES = [
-  "DANGEROUS_DOG", "WILDLIFE", "THEFT", "LOST_ITEM", "OTHER",
+  "DANGEROUS_DOG",
+  "WILDLIFE",
+  "THEFT",
+  "LOST_ITEM",
+  "OTHER",
 ] as const;
 
 export const ALLOWED_REPORT_REASONS = [
-  "INAPPROPRIATE_CONTENT", "SPAM", "HARASSMENT",
-  "FAKE_PROFILE", "ANIMAL_ABUSE", "DANGEROUS_CONTENT", "OTHER",
+  "INAPPROPRIATE_CONTENT",
+  "SPAM",
+  "HARASSMENT",
+  "FAKE_PROFILE",
+  "ANIMAL_ABUSE",
+  "DANGEROUS_CONTENT",
+  "OTHER",
 ] as const;
 
 export const ALLOWED_REPORT_TARGETS = [
-  "profile", "pet", "post", "comment", "place",
+  "profile",
+  "pet",
+  "post",
+  "comment",
+  "place",
 ] as const;
 
 export const ALLOWED_PLACE_TAGS = [
-  "off-leash", "fenced", "water", "shade", "parking", "indoor",
-  "outdoor-seating", "dog-menu", "small-dog-area", "large-dog-area",
-  "pet-friendly-staff", "accepts-all-breeds",
+  "off-leash",
+  "fenced",
+  "water",
+  "shade",
+  "parking",
+  "indoor",
+  "outdoor-seating",
+  "dog-menu",
+  "small-dog-area",
+  "large-dog-area",
+  "pet-friendly-staff",
+  "accepts-all-breeds",
 ] as const;
 
 export const ALLOWED_MEDIA_CONTENT_TYPES = [
-  "image/jpeg", "image/png", "image/heic", "video/mp4", "video/mov",
+  "image/jpeg",
+  "image/png",
+  "image/heic",
+  "video/mp4",
+  "video/mov",
 ] as const;
 
 export const ALLOWED_POST_MEDIA_TYPES = ["photo", "video"] as const;
@@ -89,7 +121,7 @@ export function validateCreatePet(body: Record<string, unknown>): CreatePetInput
   if (!ALLOWED_SPECIES.includes(body.species as typeof ALLOWED_SPECIES[number])) {
     throw new ValidationError(
       `species must be one of: ${ALLOWED_SPECIES.join(", ")}`,
-      "species"
+      "species",
     );
   }
 
@@ -124,7 +156,7 @@ export function validateCreatePet(body: Record<string, unknown>): CreatePetInput
     if (!ALLOWED_GENDERS.includes(body.gender as typeof ALLOWED_GENDERS[number])) {
       throw new ValidationError(
         `gender must be one of: ${ALLOWED_GENDERS.join(", ")}`,
-        "gender"
+        "gender",
       );
     }
   }
@@ -145,7 +177,7 @@ export function validateCreatePet(body: Record<string, unknown>): CreatePetInput
       if (!ALLOWED_TEMPERAMENTS.includes(t as typeof ALLOWED_TEMPERAMENTS[number])) {
         throw new ValidationError(
           `Invalid temperament "${t}". Allowed: ${ALLOWED_TEMPERAMENTS.join(", ")}`,
-          "temperament"
+          "temperament",
         );
       }
     }
@@ -156,7 +188,7 @@ export function validateCreatePet(body: Record<string, unknown>): CreatePetInput
     if (!ALLOWED_SIZES.includes(body.size as typeof ALLOWED_SIZES[number])) {
       throw new ValidationError(
         `size must be one of: ${ALLOWED_SIZES.join(", ")}`,
-        "size"
+        "size",
       );
     }
   }
@@ -182,7 +214,7 @@ export interface UpdateProfileInput {
 }
 
 export function validateUpdateProfile(
-  body: Record<string, unknown>
+  body: Record<string, unknown>,
 ): UpdateProfileInput {
   const result: UpdateProfileInput = {};
 
@@ -194,7 +226,7 @@ export function validateUpdateProfile(
     if (name.length < 2 || name.length > 50) {
       throw new ValidationError(
         "display_name must be 2–50 characters",
-        "display_name"
+        "display_name",
       );
     }
     result.display_name = name;
@@ -250,36 +282,36 @@ const DOC_TYPES = [...IMAGE_TYPES, "application/pdf"];
 
 export function validateImageFile(
   file: File,
-  maxSizeMB = 5
+  maxSizeMB = 5,
 ): void {
   if (!IMAGE_TYPES.includes(file.type)) {
     throw new ValidationError(
       `Only JPEG and PNG allowed, got ${file.type}`,
-      "file"
+      "file",
     );
   }
   if (file.size > maxSizeMB * 1024 * 1024) {
     throw new ValidationError(
       `File too large. Maximum ${maxSizeMB}MB`,
-      "file"
+      "file",
     );
   }
 }
 
 export function validateDocFile(
   file: File,
-  maxSizeMB = 10
+  maxSizeMB = 10,
 ): void {
   if (!DOC_TYPES.includes(file.type)) {
     throw new ValidationError(
       `Only JPEG, PNG, and PDF allowed, got ${file.type}`,
-      "file"
+      "file",
     );
   }
   if (file.size > maxSizeMB * 1024 * 1024) {
     throw new ValidationError(
       `File too large. Maximum ${maxSizeMB}MB`,
-      "file"
+      "file",
     );
   }
 }

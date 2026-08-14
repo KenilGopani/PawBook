@@ -11,8 +11,8 @@
 import { handleCors } from "../_shared/cors.ts";
 import { createUserClient, getAuthUser } from "../_shared/supabase.ts";
 import { neo4jQuery } from "../_shared/neo4j.ts";
-import { ok, errorResponse, AppError } from "../_shared/errors.ts";
-import { getQueryParams, getOwnerPetIds } from "../_shared/helpers.ts";
+import { AppError, errorResponse, ok } from "../_shared/errors.ts";
+import { getOwnerPetIds, getQueryParams } from "../_shared/helpers.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return handleCors();
@@ -55,7 +55,7 @@ Deno.serve(async (req) => {
       WITH COLLECT({pet_id: friend.id, name: friend.name, last_visit: last_visit}) as all_visits
       RETURN SIZE(all_visits) as total_count, all_visits[0..10] as preview
       `,
-      { place_id, my_pet_ids: myPetIds }
+      { place_id, my_pet_ids: myPetIds },
     );
 
     const totalCount = neo4jResult[0]?.total_count ?? 0;

@@ -9,7 +9,7 @@
 
 import { handleCors } from "../_shared/cors.ts";
 import { createUserClient, getAuthUser } from "../_shared/supabase.ts";
-import { ok, errorResponse, AppError, NotFoundError } from "../_shared/errors.ts";
+import { AppError, errorResponse, NotFoundError, ok } from "../_shared/errors.ts";
 import { assertPetOwner, createNotification, getQueryParams } from "../_shared/helpers.ts";
 import { ALLOWED_RSVP_STATUSES } from "../_shared/validation.ts";
 
@@ -35,11 +35,19 @@ Deno.serve(async (req) => {
     }
 
     if (!meetup_id || !pet_id || !rsvp_status) {
-      throw new AppError("VALIDATION_ERROR", "meetup_id, pet_id, and rsvp_status are required", 400);
+      throw new AppError(
+        "VALIDATION_ERROR",
+        "meetup_id, pet_id, and rsvp_status are required",
+        400,
+      );
     }
 
     if (!ALLOWED_RSVP_STATUSES.includes(rsvp_status as any)) {
-      throw new AppError("VALIDATION_ERROR", `rsvp_status must be one of: ${ALLOWED_RSVP_STATUSES.join(", ")}`, 400);
+      throw new AppError(
+        "VALIDATION_ERROR",
+        `rsvp_status must be one of: ${ALLOWED_RSVP_STATUSES.join(", ")}`,
+        400,
+      );
     }
 
     // 1. Verify caller owns pet_id
@@ -58,7 +66,11 @@ Deno.serve(async (req) => {
 
     // Meetup must be PENDING or ACCEPTED
     if (meetup.status !== "PENDING" && meetup.status !== "ACCEPTED") {
-      throw new AppError("INVALID_STATE", `Cannot RSVP to a meetup in status ${meetup.status}`, 409);
+      throw new AppError(
+        "INVALID_STATE",
+        `Cannot RSVP to a meetup in status ${meetup.status}`,
+        409,
+      );
     }
 
     // 3. Fetch participant record
@@ -92,7 +104,7 @@ Deno.serve(async (req) => {
     }
 
     // 5. Update RSVP status
-    const { data: updatedPart, error: updateError } = await supabase
+    const { error: updateError } = await supabase
       .from("meetup_participants")
       .update({ rsvp_status })
       .eq("meetup_id", meetup_id)

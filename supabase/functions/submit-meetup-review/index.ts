@@ -11,7 +11,7 @@
 import { handleCors } from "../_shared/cors.ts";
 import { createUserClient, getAuthUser } from "../_shared/supabase.ts";
 import { neo4jQuery } from "../_shared/neo4j.ts";
-import { created, errorResponse, AppError, NotFoundError } from "../_shared/errors.ts";
+import { AppError, created, errorResponse, NotFoundError } from "../_shared/errors.ts";
 import { assertPetOwner, getQueryParams } from "../_shared/helpers.ts";
 
 Deno.serve(async (req) => {
@@ -38,7 +38,11 @@ Deno.serve(async (req) => {
     }
 
     if (!meetup_id || !reviewer_pet_id || !reviewed_pet_id || rating === undefined) {
-      throw new AppError("VALIDATION_ERROR", "meetup_id, reviewer_pet_id, reviewed_pet_id, and rating are required", 400);
+      throw new AppError(
+        "VALIDATION_ERROR",
+        "meetup_id, reviewer_pet_id, reviewed_pet_id, and rating are required",
+        400,
+      );
     }
 
     if (reviewer_pet_id === reviewed_pet_id) {
@@ -68,7 +72,11 @@ Deno.serve(async (req) => {
     }
 
     if (meetup.status !== "COMPLETED") {
-      throw new AppError("INVALID_STATE", "Reviews can only be submitted for completed meetups", 409);
+      throw new AppError(
+        "INVALID_STATE",
+        "Reviews can only be submitted for completed meetups",
+        409,
+      );
     }
 
     // 3. Verify both pets were ACCEPTED participants
@@ -106,7 +114,11 @@ Deno.serve(async (req) => {
 
     if (insertError) {
       if (insertError.code === "23505") {
-        throw new AppError("DUPLICATE", "You have already submitted a review for this pet in this meetup", 409);
+        throw new AppError(
+          "DUPLICATE",
+          "You have already submitted a review for this pet in this meetup",
+          409,
+        );
       }
       throw insertError;
     }
@@ -123,7 +135,7 @@ Deno.serve(async (req) => {
             ELSE r.compatibility + $boost
         END
         `,
-        { a: reviewer_pet_id, b: reviewed_pet_id, boost: compatibilityBoost }
+        { a: reviewer_pet_id, b: reviewed_pet_id, boost: compatibilityBoost },
       );
     }
 

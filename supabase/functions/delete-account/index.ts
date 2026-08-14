@@ -16,8 +16,8 @@
  */
 
 import { handleCors } from "../_shared/cors.ts";
-import { createUserClient, createAdminClient, getAuthUser } from "../_shared/supabase.ts";
-import { ok, errorResponse, AppError } from "../_shared/errors.ts";
+import { createAdminClient, createUserClient, getAuthUser } from "../_shared/supabase.ts";
+import { AppError, errorResponse, ok } from "../_shared/errors.ts";
 import { neo4jQuery } from "../_shared/neo4j.ts";
 
 Deno.serve(async (req) => {
@@ -34,7 +34,7 @@ Deno.serve(async (req) => {
       throw new AppError(
         "VALIDATION_ERROR",
         'Confirmation required: send { "confirm": "DELETE MY ACCOUNT" }',
-        400
+        400,
       );
     }
 
@@ -70,7 +70,7 @@ Deno.serve(async (req) => {
           MATCH (p:Pet {id: $pet_id})
           SET p.is_active = false
           `,
-          { pet_id: pet.id }
+          { pet_id: pet.id },
         );
       }
     }
@@ -86,7 +86,7 @@ Deno.serve(async (req) => {
 
     // 5. Sign out all sessions (using admin client)
     const { error: signOutError } = await adminClient.auth.admin.signOut(
-      user.id
+      user.id,
     );
 
     // Sign-out error is non-fatal — log but don't throw

@@ -11,7 +11,7 @@
 
 import { handleCors } from "../_shared/cors.ts";
 import { createUserClient, getAuthUser } from "../_shared/supabase.ts";
-import { ok, errorResponse, AppError } from "../_shared/errors.ts";
+import { errorResponse, ok } from "../_shared/errors.ts";
 import { getQueryParams } from "../_shared/helpers.ts";
 
 Deno.serve(async (req) => {
@@ -130,9 +130,7 @@ Deno.serve(async (req) => {
       my_reaction: myReactions?.find((r) => r.post_id === post.id) ?? null,
     }));
 
-    const nextCursor = posts.length === limit
-      ? posts[posts.length - 1].created_at
-      : null;
+    const nextCursor = posts.length === limit ? posts[posts.length - 1].created_at : null;
 
     return ok({ data: enrichedPosts, next_cursor: nextCursor });
   } catch (error) {

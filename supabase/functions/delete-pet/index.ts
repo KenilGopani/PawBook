@@ -15,9 +15,15 @@
  */
 
 import { handleCors } from "../_shared/cors.ts";
-import { createUserClient, createAdminClient, getAuthUser } from "../_shared/supabase.ts";
+import { createAdminClient, createUserClient, getAuthUser } from "../_shared/supabase.ts";
 import { neo4jQuery } from "../_shared/neo4j.ts";
-import { ok, errorResponse, ForbiddenError, NotFoundError, ValidationError } from "../_shared/errors.ts";
+import {
+  errorResponse,
+  ForbiddenError,
+  NotFoundError,
+  ok,
+  ValidationError,
+} from "../_shared/errors.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return handleCors();
@@ -62,19 +68,19 @@ Deno.serve(async (req) => {
     // 3. Set Neo4j Pet node as inactive
     await neo4jQuery(
       `MATCH (p:Pet {id: $pet_id}) SET p.is_active = false`,
-      { pet_id: petId }
+      { pet_id: petId },
     );
 
     // 4. Remove FRIENDS_WITH relationships (but keep VISITED for history)
     await neo4jQuery(
       `MATCH (p:Pet {id: $pet_id})-[r:FRIENDS_WITH]-() DELETE r`,
-      { pet_id: petId }
+      { pet_id: petId },
     );
 
     // Also remove pending friend requests
     await neo4jQuery(
       `MATCH (p:Pet {id: $pet_id})-[r:SENT_REQUEST_TO]-() DELETE r`,
-      { pet_id: petId }
+      { pet_id: petId },
     );
 
     // 5. Cancel PENDING meetups involving this pet

@@ -10,7 +10,7 @@
 
 import { handleCors } from "../_shared/cors.ts";
 import { createUserClient, getAuthUser } from "../_shared/supabase.ts";
-import { ok, errorResponse, AppError } from "../_shared/errors.ts";
+import { AppError, errorResponse, ok } from "../_shared/errors.ts";
 import { assertPetOwner } from "../_shared/helpers.ts";
 import { ALLOWED_MEDIA_CONTENT_TYPES } from "../_shared/validation.ts";
 
@@ -23,7 +23,11 @@ Deno.serve(async (req) => {
     const { pet_id, file_name, content_type, file_size_bytes } = await req.json();
 
     if (!pet_id || !file_name || !content_type || file_size_bytes === undefined) {
-      throw new AppError("VALIDATION_ERROR", "pet_id, file_name, content_type, and file_size_bytes are required", 400);
+      throw new AppError(
+        "VALIDATION_ERROR",
+        "pet_id, file_name, content_type, and file_size_bytes are required",
+        400,
+      );
     }
 
     // 1. Verify caller owns pet_id
@@ -38,7 +42,11 @@ Deno.serve(async (req) => {
     const isVideo = content_type.startsWith("video/");
     const maxSize = isVideo ? 100 * 1024 * 1024 : 10 * 1024 * 1024;
     if (file_size_bytes > maxSize) {
-      throw new AppError("INVALID_FILE", `File size exceeds the limit (${isVideo ? "100MB" : "10MB"})`, 400);
+      throw new AppError(
+        "INVALID_FILE",
+        `File size exceeds the limit (${isVideo ? "100MB" : "10MB"})`,
+        400,
+      );
     }
 
     // 3. Generate unique storage path: {pet_id}/{uuid}.{ext}

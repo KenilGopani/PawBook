@@ -9,9 +9,9 @@
  */
 
 import { handleCors } from "../_shared/cors.ts";
-import { createUserClient, createAdminClient, getAuthUser } from "../_shared/supabase.ts";
+import { createAdminClient, createUserClient, getAuthUser } from "../_shared/supabase.ts";
 import { neo4jQuery } from "../_shared/neo4j.ts";
-import { ok, errorResponse, AppError, NotFoundError } from "../_shared/errors.ts";
+import { AppError, errorResponse, NotFoundError, ok } from "../_shared/errors.ts";
 import { createNotification } from "../_shared/helpers.ts";
 
 Deno.serve(async (req) => {
@@ -20,7 +20,8 @@ Deno.serve(async (req) => {
   try {
     const authHeader = req.headers.get("Authorization");
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const isServiceRole = authHeader === `Bearer ${serviceRoleKey}` || authHeader === serviceRoleKey;
+    const isServiceRole = authHeader === `Bearer ${serviceRoleKey}` ||
+      authHeader === serviceRoleKey;
 
     let supabase;
     let isSystem = false;
@@ -54,12 +55,20 @@ Deno.serve(async (req) => {
 
     // 2. Validate authorization
     if (!isSystem && meetup.organizer_id !== user?.id) {
-      throw new AppError("AUTH_FORBIDDEN", "Only the organizer or system can complete this meetup", 403);
+      throw new AppError(
+        "AUTH_FORBIDDEN",
+        "Only the organizer or system can complete this meetup",
+        403,
+      );
     }
 
     // 3. Validate state
     if (meetup.status !== "SCHEDULED") {
-      throw new AppError("INVALID_STATE", `Cannot complete a meetup in status ${meetup.status}`, 409);
+      throw new AppError(
+        "INVALID_STATE",
+        `Cannot complete a meetup in status ${meetup.status}`,
+        409,
+      );
     }
 
     // 4. Update status to COMPLETED
@@ -100,7 +109,7 @@ Deno.serve(async (req) => {
             place_id: meetup.place_id,
             visited_at: meetup.scheduled_at,
             meetup_id: meetup.id,
-          }
+          },
         );
         edgesCreated++;
       }
@@ -122,7 +131,7 @@ Deno.serve(async (req) => {
               place_id: meetup.place_id,
               meetup_id: meetup.id,
               met_at: meetup.scheduled_at,
-            }
+            },
           );
           edgesCreated += 2;
         }

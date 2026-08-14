@@ -9,7 +9,7 @@
 
 import { handleCors } from "../_shared/cors.ts";
 import { createUserClient, getAuthUser } from "../_shared/supabase.ts";
-import { ok, errorResponse, AppError, NotFoundError } from "../_shared/errors.ts";
+import { AppError, errorResponse, NotFoundError, ok } from "../_shared/errors.ts";
 import { createNotification, getQueryParams } from "../_shared/helpers.ts";
 
 Deno.serve(async (req) => {
@@ -33,7 +33,11 @@ Deno.serve(async (req) => {
     }
 
     if (!meetup_id || !Array.isArray(pet_ids) || pet_ids.length < 1) {
-      throw new AppError("VALIDATION_ERROR", "meetup_id and a non-empty array of pet_ids are required", 400);
+      throw new AppError(
+        "VALIDATION_ERROR",
+        "meetup_id and a non-empty array of pet_ids are required",
+        400,
+      );
     }
 
     // 1. Fetch meetup
@@ -58,7 +62,11 @@ Deno.serve(async (req) => {
     }
 
     if (meetup.status !== "PENDING" && meetup.status !== "ACCEPTED") {
-      throw new AppError("INVALID_STATE", `Cannot invite pets to a meetup in status ${meetup.status}`, 409);
+      throw new AppError(
+        "INVALID_STATE",
+        `Cannot invite pets to a meetup in status ${meetup.status}`,
+        409,
+      );
     }
 
     // 4. Check existing participant count (invited & accepted)
@@ -71,7 +79,11 @@ Deno.serve(async (req) => {
     if (countError) throw countError;
     const activeCount = count || 0;
     if (activeCount + pet_ids.length > meetup.max_pets) {
-      throw new AppError("MEETUP_FULL", `Adding ${pet_ids.length} invite(s) would exceed max capacity of ${meetup.max_pets} (currently ${activeCount} active)`, 409);
+      throw new AppError(
+        "MEETUP_FULL",
+        `Adding ${pet_ids.length} invite(s) would exceed max capacity of ${meetup.max_pets} (currently ${activeCount} active)`,
+        409,
+      );
     }
 
     // 5. Check if any target pets are already invited or participants
@@ -84,7 +96,11 @@ Deno.serve(async (req) => {
     if (checkError) throw checkError;
     if (existingParts && existingParts.length > 0) {
       const duplicateIds = existingParts.map((p) => p.pet_id);
-      throw new AppError("DUPLICATE", `Pets already invited or participating: ${duplicateIds.join(", ")}`, 409);
+      throw new AppError(
+        "DUPLICATE",
+        `Pets already invited or participating: ${duplicateIds.join(", ")}`,
+        409,
+      );
     }
 
     // Verify all pet IDs exist and are active

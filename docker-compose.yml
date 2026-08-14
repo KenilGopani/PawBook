@@ -1,0 +1,33 @@
+# Local Neo4j for PawBook — mirrors the Neo4j AuraDB instance the app talks
+# to in production (see _shared/neo4j.ts — same HTTP transaction API, same
+# NEO4J_URI/NEO4J_USER/NEO4J_PASSWORD env vars, just pointed at localhost).
+#
+# The rest of the backend (Postgres+PostGIS, Auth, Storage, Realtime) is
+# also Docker-based but is started by the Supabase CLI itself — running
+# `supabase start` launches and manages its own set of containers, so
+# there's no separate compose file for it here (writing one by hand would
+# just drift from what the CLI already maintains upstream).
+#
+# Usage: docker compose up -d
+
+services:
+  neo4j:
+    image: neo4j:5-community
+    container_name: pawbook-neo4j
+    ports:
+      - "7474:7474" # HTTP — Cypher transaction API, used by _shared/neo4j.ts
+      - "7687:7687" # Bolt — only needed for Neo4j Browser / cypher-shell
+    environment:
+      NEO4J_AUTH: neo4j/pawbook-dev-password
+      NEO4J_server_default__advertised__address: localhost
+    volumes:
+      - pawbook_neo4j_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:7474 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+volumes:
+  pawbook_neo4j_data:

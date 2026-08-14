@@ -10,7 +10,7 @@
 
 import { handleCors } from "../_shared/cors.ts";
 import { createUserClient, getAuthUser } from "../_shared/supabase.ts";
-import { created, errorResponse, AppError, NotFoundError } from "../_shared/errors.ts";
+import { AppError, created, errorResponse, NotFoundError } from "../_shared/errors.ts";
 import { ALLOWED_REPORT_REASONS, ALLOWED_REPORT_TARGETS } from "../_shared/validation.ts";
 
 Deno.serve(async (req) => {
@@ -25,15 +25,27 @@ Deno.serve(async (req) => {
 
     // 1. Validation
     if (!target_type || !target_id || !reason) {
-      throw new AppError("VALIDATION_ERROR", "target_type, target_id, and reason are required", 400);
+      throw new AppError(
+        "VALIDATION_ERROR",
+        "target_type, target_id, and reason are required",
+        400,
+      );
     }
 
     if (!ALLOWED_REPORT_TARGETS.includes(target_type as any)) {
-      throw new AppError("VALIDATION_ERROR", `target_type must be one of: ${ALLOWED_REPORT_TARGETS.join(", ")}`, 400);
+      throw new AppError(
+        "VALIDATION_ERROR",
+        `target_type must be one of: ${ALLOWED_REPORT_TARGETS.join(", ")}`,
+        400,
+      );
     }
 
     if (!ALLOWED_REPORT_REASONS.includes(reason as any)) {
-      throw new AppError("INVALID_REASON", `reason must be one of: ${ALLOWED_REPORT_REASONS.join(", ")}`, 400);
+      throw new AppError(
+        "INVALID_REASON",
+        `reason must be one of: ${ALLOWED_REPORT_REASONS.join(", ")}`,
+        400,
+      );
     }
 
     if (details && details.length > 500) {
@@ -140,7 +152,9 @@ Deno.serve(async (req) => {
       .gte("created_at", twentyFourHoursAgo);
 
     if (!countError && reportCount !== null && reportCount >= 5) {
-      console.log(`[Auto-Flag] Target ${target_type} (${target_id}) reached 5+ reports for reason ${reason} within 24 hours.`);
+      console.log(
+        `[Auto-Flag] Target ${target_type} (${target_id}) reached 5+ reports for reason ${reason} within 24 hours.`,
+      );
       // Optional: perform content flags in db if columns are added in the future
     }
 

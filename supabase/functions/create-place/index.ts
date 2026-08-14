@@ -10,8 +10,8 @@
 import { handleCors } from "../_shared/cors.ts";
 import { createUserClient, getAuthUser } from "../_shared/supabase.ts";
 import { neo4jQuery } from "../_shared/neo4j.ts";
-import { created, errorResponse, AppError } from "../_shared/errors.ts";
-import { ALLOWED_PLACE_TYPES, ALLOWED_PLACE_TAGS } from "../_shared/validation.ts";
+import { AppError, created, errorResponse } from "../_shared/errors.ts";
+import { ALLOWED_PLACE_TAGS, ALLOWED_PLACE_TYPES } from "../_shared/validation.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return handleCors();
@@ -29,7 +29,11 @@ Deno.serve(async (req) => {
     }
 
     if (!type || !ALLOWED_PLACE_TYPES.includes(type as any)) {
-      throw new AppError("VALIDATION_ERROR", `type is required and must be one of: ${ALLOWED_PLACE_TYPES.join(", ")}`, 400);
+      throw new AppError(
+        "VALIDATION_ERROR",
+        `type is required and must be one of: ${ALLOWED_PLACE_TYPES.join(", ")}`,
+        400,
+      );
     }
 
     if (lat === undefined || typeof lat !== "number" || lat < -90 || lat > 90) {
@@ -47,7 +51,11 @@ Deno.serve(async (req) => {
     if (tags.length > 0) {
       for (const t of tags) {
         if (!ALLOWED_PLACE_TAGS.includes(t as any)) {
-          throw new AppError("INVALID_TAG", `Tag "${t}" is not allowed. Allowed: ${ALLOWED_PLACE_TAGS.join(", ")}`, 400);
+          throw new AppError(
+            "INVALID_TAG",
+            `Tag "${t}" is not allowed. Allowed: ${ALLOWED_PLACE_TAGS.join(", ")}`,
+            400,
+          );
         }
       }
     }
@@ -63,7 +71,7 @@ Deno.serve(async (req) => {
     if (nearbyError) throw nearbyError;
 
     const duplicate = nearby?.find(
-      (n: any) => n.name.toLowerCase().trim() === name.toLowerCase().trim()
+      (n: any) => n.name.toLowerCase().trim() === name.toLowerCase().trim(),
     );
 
     if (duplicate) {
@@ -111,7 +119,7 @@ Deno.serve(async (req) => {
         lat,
         lng,
         city: derivedCity,
-      }
+      },
     );
 
     return created({

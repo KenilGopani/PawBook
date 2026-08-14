@@ -10,7 +10,7 @@
 import { handleCors } from "../_shared/cors.ts";
 import { createUserClient, getAuthUser } from "../_shared/supabase.ts";
 import { neo4jQuery } from "../_shared/neo4j.ts";
-import { ok, errorResponse, AppError } from "../_shared/errors.ts";
+import { AppError, errorResponse, ok } from "../_shared/errors.ts";
 import { assertPetOwner } from "../_shared/helpers.ts";
 
 Deno.serve(async (req) => {
@@ -37,7 +37,7 @@ Deno.serve(async (req) => {
       .from("pet_relationships")
       .delete()
       .or(
-        `and(from_pet_id.eq.${from_pet_id},to_pet_id.eq.${to_pet_id}),and(from_pet_id.eq.${to_pet_id},to_pet_id.eq.${from_pet_id})`
+        `and(from_pet_id.eq.${from_pet_id},to_pet_id.eq.${to_pet_id}),and(from_pet_id.eq.${to_pet_id},to_pet_id.eq.${from_pet_id})`,
       );
 
     // 3. Insert BLOCKED relationship in Supabase
@@ -46,7 +46,7 @@ Deno.serve(async (req) => {
       .insert({
         from_pet_id,
         to_pet_id,
-        rel_type: "BLOCKED"
+        rel_type: "BLOCKED",
       })
       .select()
       .single();
@@ -61,7 +61,7 @@ Deno.serve(async (req) => {
       OPTIONAL MATCH (a)-[r2:SENT_REQUEST_TO]-(b) DELETE r2
       MERGE (a)-[b_edge:BLOCKED {created_at: $created_at}]->(b)
       `,
-      { from_pet_id, to_pet_id, created_at: blockedRel.created_at }
+      { from_pet_id, to_pet_id, created_at: blockedRel.created_at },
     );
 
     return ok({ success: true });

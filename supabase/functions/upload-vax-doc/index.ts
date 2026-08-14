@@ -11,8 +11,8 @@
  */
 
 import { handleCors } from "../_shared/cors.ts";
-import { createUserClient, createAdminClient, getAuthUser } from "../_shared/supabase.ts";
-import { ok, errorResponse, AppError, ForbiddenError, NotFoundError } from "../_shared/errors.ts";
+import { createAdminClient, createUserClient, getAuthUser } from "../_shared/supabase.ts";
+import { AppError, errorResponse, ForbiddenError, NotFoundError, ok } from "../_shared/errors.ts";
 import { validateDocFile } from "../_shared/validation.ts";
 
 Deno.serve(async (req) => {

@@ -14,6 +14,12 @@ port = 54322
 shadow_port = 54320
 major_version = 15
 
+# Run seed.sql after migrations on `supabase db reset`. Local only —
+# `supabase db push` deploys migrations but never the seed.
+[db.seed]
+enabled = true
+sql_paths = ["./seed.sql"]
+
 [studio]
 enabled = true
 port = 54323
@@ -25,6 +31,8 @@ additional_redirect_urls = ["pawbook://reset-password"]
 
 [auth.external.apple]
 enabled = true
+client_id = "env(SUPABASE_AUTH_APPLE_CLIENT_ID)"
+secret = "env(SUPABASE_AUTH_APPLE_SECRET)"
 
 [storage]
 enabled = true

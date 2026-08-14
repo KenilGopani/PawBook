@@ -15,7 +15,7 @@ export class AppError extends Error {
     public code: string,
     message: string,
     public status: number = 400,
-    public field?: string
+    public field?: string,
   ) {
     super(message);
     this.name = "AppError";
@@ -113,6 +113,6 @@ export function errorResponse(error: unknown): Response {
     {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
-    }
+    },
   );
 }

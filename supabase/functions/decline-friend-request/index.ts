@@ -9,7 +9,7 @@
 import { handleCors } from "../_shared/cors.ts";
 import { createUserClient, getAuthUser } from "../_shared/supabase.ts";
 import { neo4jQuery } from "../_shared/neo4j.ts";
-import { ok, errorResponse, AppError, NotFoundError } from "../_shared/errors.ts";
+import { AppError, errorResponse, NotFoundError, ok } from "../_shared/errors.ts";
 import { assertPetOwner } from "../_shared/helpers.ts";
 
 Deno.serve(async (req) => {
@@ -34,7 +34,9 @@ Deno.serve(async (req) => {
       .single();
 
     if (!rel) throw new NotFoundError("Relationship not found");
-    if (rel.rel_type !== "FRIEND_REQ") throw new AppError("INVALID_STATE", "Not a pending request", 409);
+    if (rel.rel_type !== "FRIEND_REQ") {
+      throw new AppError("INVALID_STATE", "Not a pending request", 409);
+    }
 
     // Verify caller is either side
     if (rel.from_pet_id !== pet_id && rel.to_pet_id !== pet_id) {
@@ -47,7 +49,7 @@ Deno.serve(async (req) => {
     // Delete from Neo4j
     await neo4jQuery(
       `MATCH (a:Pet {id: $from})-[r:SENT_REQUEST_TO]->(b:Pet {id: $to}) DELETE r`,
-      { from: rel.from_pet_id, to: rel.to_pet_id }
+      { from: rel.from_pet_id, to: rel.to_pet_id },
     );
 
     return ok({ success: true });

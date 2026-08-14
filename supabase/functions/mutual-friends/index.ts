@@ -11,7 +11,7 @@
 import { handleCors } from "../_shared/cors.ts";
 import { createUserClient, getAuthUser } from "../_shared/supabase.ts";
 import { neo4jQuery } from "../_shared/neo4j.ts";
-import { ok, errorResponse, AppError } from "../_shared/errors.ts";
+import { AppError, errorResponse, ok } from "../_shared/errors.ts";
 import { getQueryParams } from "../_shared/helpers.ts";
 
 Deno.serve(async (req) => {
@@ -36,7 +36,11 @@ Deno.serve(async (req) => {
     }
 
     if (!pet_a || !pet_b) {
-      throw new AppError("VALIDATION_ERROR", "Two pet IDs are required (pet_id and other_pet_id)", 400);
+      throw new AppError(
+        "VALIDATION_ERROR",
+        "Two pet IDs are required (pet_id and other_pet_id)",
+        400,
+      );
     }
 
     // Query Neo4j for mutual friends
@@ -45,7 +49,7 @@ Deno.serve(async (req) => {
       MATCH (a:Pet {id: $pet_a})-[:FRIENDS_WITH]->(mutual:Pet)<-[:FRIENDS_WITH]-(b:Pet {id: $pet_b})
       RETURN mutual.id as pet_id
       `,
-      { pet_a, pet_b }
+      { pet_a, pet_b },
     );
 
     if (neo4jResult.length === 0) {

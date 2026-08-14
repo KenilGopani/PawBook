@@ -20,7 +20,7 @@
 
 import { handleCors } from "../_shared/cors.ts";
 import { createUserClient, getAuthUser } from "../_shared/supabase.ts";
-import { ok, errorResponse } from "../_shared/errors.ts";
+import { errorResponse, ok } from "../_shared/errors.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return handleCors();
@@ -46,7 +46,7 @@ Deno.serve(async (req) => {
       .select(
         `id, name, species, breed, avatar_url, temperament, size, is_vaccinated,
          profiles!owner_id(city)`,
-        { count: "exact" }
+        { count: "exact" },
       )
       .eq("is_active", true);
 
@@ -103,7 +103,7 @@ Deno.serve(async (req) => {
     // Filter by city if specified (post-processing since Supabase join filter is limited)
     if (city) {
       results = results.filter(
-        (r: { city: string | null }) => r.city?.toLowerCase() === city.toLowerCase()
+        (r: { city: string | null }) => r.city?.toLowerCase() === city.toLowerCase(),
       );
     }
 

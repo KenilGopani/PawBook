@@ -10,7 +10,7 @@
 import { handleCors } from "../_shared/cors.ts";
 import { createUserClient, getAuthUser } from "../_shared/supabase.ts";
 import { neo4jQuery } from "../_shared/neo4j.ts";
-import { ok, errorResponse, AppError } from "../_shared/errors.ts";
+import { AppError, errorResponse, ok } from "../_shared/errors.ts";
 import { assertPetOwner } from "../_shared/helpers.ts";
 
 Deno.serve(async (req) => {
@@ -44,7 +44,7 @@ Deno.serve(async (req) => {
       MATCH (a:Pet {id: $from_pet_id})-[r:BLOCKED]->(b:Pet {id: $to_pet_id})
       DELETE r
       `,
-      { from_pet_id, to_pet_id }
+      { from_pet_id, to_pet_id },
     );
 
     return ok({ success: true });

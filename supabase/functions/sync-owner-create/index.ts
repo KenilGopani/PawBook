@@ -35,7 +35,7 @@ Deno.serve(async (req) => {
         id: record.id,
         display_name: record.display_name ?? "",
         city: record.city ?? "",
-      }
+      },
     );
 
     return new Response("ok", { status: 200 });

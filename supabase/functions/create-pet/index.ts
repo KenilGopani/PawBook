@@ -17,7 +17,7 @@
 import { handleCors } from "../_shared/cors.ts";
 import { createUserClient, getAuthUser } from "../_shared/supabase.ts";
 import { neo4jQuery } from "../_shared/neo4j.ts";
-import { created, errorResponse, AppError } from "../_shared/errors.ts";
+import { AppError, created, errorResponse } from "../_shared/errors.ts";
 import { validateCreatePet } from "../_shared/validation.ts";
 
 Deno.serve(async (req) => {
@@ -101,7 +101,7 @@ Deno.serve(async (req) => {
         city: profile?.city || "",
         display_name: profile?.display_name || "",
         created_at: pet.created_at,
-      }
+      },
     );
 
     return created(pet);

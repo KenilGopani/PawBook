@@ -12,8 +12,19 @@
 import { handleCors } from "../_shared/cors.ts";
 import { createUserClient, getAuthUser } from "../_shared/supabase.ts";
 import { neo4jQuery } from "../_shared/neo4j.ts";
-import { ok, errorResponse, ForbiddenError, NotFoundError, ValidationError } from "../_shared/errors.ts";
-import { ALLOWED_SPECIES, ALLOWED_GENDERS, ALLOWED_SIZES, ALLOWED_TEMPERAMENTS } from "../_shared/validation.ts";
+import {
+  errorResponse,
+  ForbiddenError,
+  NotFoundError,
+  ok,
+  ValidationError,
+} from "../_shared/errors.ts";
+import {
+  ALLOWED_GENDERS,
+  ALLOWED_SIZES,
+  ALLOWED_SPECIES,
+  ALLOWED_TEMPERAMENTS,
+} from "../_shared/validation.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return handleCors();
@@ -49,7 +60,9 @@ Deno.serve(async (req) => {
     const neo4jFields: Record<string, unknown> = { pet_id: petId };
 
     if (body.name !== undefined) {
-      if (typeof body.name !== "string" || body.name.trim().length < 1 || body.name.trim().length > 50) {
+      if (
+        typeof body.name !== "string" || body.name.trim().length < 1 || body.name.trim().length > 50
+      ) {
         throw new ValidationError("name must be 1–50 characters", "name");
       }
       updateFields.name = body.name.trim();
@@ -58,7 +71,10 @@ Deno.serve(async (req) => {
 
     if (body.species !== undefined) {
       if (!ALLOWED_SPECIES.includes(body.species)) {
-        throw new ValidationError(`species must be one of: ${ALLOWED_SPECIES.join(", ")}`, "species");
+        throw new ValidationError(
+          `species must be one of: ${ALLOWED_SPECIES.join(", ")}`,
+          "species",
+        );
       }
       updateFields.species = body.species;
       neo4jFields.species = body.species;
@@ -139,7 +155,7 @@ Deno.serve(async (req) => {
 
       await neo4jQuery(
         `MATCH (p:Pet {id: $pet_id}) SET ${setClauses}`,
-        neo4jFields
+        neo4jFields,
       );
     }
 
